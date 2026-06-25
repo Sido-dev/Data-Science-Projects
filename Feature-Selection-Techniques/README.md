@@ -1,83 +1,94 @@
 # Feature Selection Techniques in Machine Learning
 
 ## 📌 Project Overview
-This project demonstrates multiple feature selection techniques used in Machine Learning to identify the most relevant features for predictive modeling. Feature selection helps improve model performance, reduce overfitting, and decrease computational complexity.
+
+This project demonstrates and compares various **Feature Selection Techniques** used in Machine Learning to identify the most relevant features for predictive modeling. Feature selection helps reduce dimensionality, improve model performance, decrease training time, and enhance model interpretability.
 
 ---
 
 ## 🎯 Objective
-Compare different feature selection methods and identify the most important features from a dataset.
 
-## 🎯 Where Do We Use Feature Selection?
-
-Feature selection is commonly used before training Machine Learning models to select the most relevant features and remove unnecessary ones.
-
-### Use Cases
-
-- Improving model accuracy by keeping only important features.
-- Reducing overfitting caused by irrelevant variables.
-- Decreasing training time on large datasets.
-- Simplifying model interpretation and explainability.
-- Handling high-dimensional datasets with many features.
-
-### When to Use Each Technique
-
-| Technique | Best Used When | Example Dataset |
-|------------|---------------|----------------|
-| Chi-Square (Chi²) | Features are categorical or non-negative and the target is categorical. | Titanic Survival Prediction |
-| Correlation | Finding linear relationships between numerical features and the target. | House Price Prediction |
-| Decision Tree Importance | Identifying important features for tree-based models. | Heart Disease Prediction |
-| RFE | Selecting the optimal subset of features using a machine learning model. | Customer Churn Prediction |
-| Slope Method (m-Slope) | Measuring the linear influence of a feature on the target variable. | Salary Prediction, Sales Forecasting |
-
-### Real-World Applications
-
-- **Healthcare:** Selecting key patient attributes for disease prediction.
-- **Finance:** Identifying factors affecting loan approval or fraud detection.
-- **Marketing:** Finding customer characteristics that influence purchases.
-- **E-commerce:** Selecting features for recommendation systems.
-- **Predictive Analytics:** Reducing dimensionality before model training.
+To explore and compare multiple feature selection methods and identify the most important features for building efficient machine learning models.
 
 ---
 
-## 🛠 Techniques Used
+## 🎯 Where Do We Use Feature Selection?
 
-### 1. Chi-Square (Chi²) Test
-Selects features based on their statistical relationship with the target variable.
+| Technique | Best Used When | Example Dataset |
+|------------|---------------|----------------|
+| Variance Threshold | Removing features with very low variance. | Customer Demographics |
+| Chi-Square (Chi²) | Features are categorical or non-negative and the target is categorical. | Titanic Survival Prediction |
+| Correlation Analysis | Finding linear relationships between numerical features and the target. | House Price Prediction |
+| ANOVA F-Test | Comparing numerical features against categorical targets. | Student Performance Prediction |
+| Mutual Information | Capturing linear and non-linear relationships. | Customer Churn Prediction |
+| Decision Tree Importance | Identifying important features for tree-based models. | Heart Disease Prediction |
+| Random Forest Importance | Measuring feature importance using ensemble learning. | Credit Risk Analysis |
+| XGBoost Importance | Selecting features in gradient boosting models. | Loan Default Prediction |
+| Recursive Feature Elimination (RFE) | Selecting the optimal subset of features. | Employee Attrition Prediction |
+| RFECV | Automatically determining the optimal number of features. | Sales Prediction |
+| Forward Feature Selection | Adding features one by one based on performance improvement. | House Price Prediction |
+| Backward Feature Elimination | Removing less important features iteratively. | Medical Diagnosis |
+| Permutation Importance | Measuring performance drop when a feature is shuffled. | Fraud Detection |
+| SHAP | Explaining feature contributions to model predictions. | Customer Segmentation |
+| Slope Method (m) *(Optional)* | Measuring the linear influence of a feature on the target. | Sales Forecasting |
+
+---
+
+## 🛠 Feature Selection Techniques
+
+### Filter Methods
+
+#### 1. Variance Threshold
+Removes features with low variance.
+
+```python
+from sklearn.feature_selection import VarianceThreshold
+
+selector = VarianceThreshold(threshold=0.01)
+X_selected = selector.fit_transform(X)
+```
+
+#### 2. Chi-Square (Chi²)
+Measures dependency between features and the target.
 
 ```python
 from sklearn.feature_selection import SelectKBest, chi2
 
 selector = SelectKBest(score_func=chi2, k=5)
-X_new = selector.fit_transform(X, y)
+X_selected = selector.fit_transform(X, y)
 ```
 
-### 2. Correlation-Based Selection
-Selects features with strong correlation to the target variable.
+#### 3. Correlation Analysis
+Selects features based on correlation strength.
 
 ```python
-import pandas as pd
-
 corr_matrix = df.corr(numeric_only=True)
-target_corr = corr_matrix['target'].abs().sort_values(ascending=False)
-print(target_corr)
+print(corr_matrix['target'].sort_values(ascending=False))
 ```
 
-### 3. Decision Tree Feature Importance
-Uses a Decision Tree model to rank features based on importance.
+#### 4. ANOVA F-Test
+Evaluates numerical features against categorical targets.
 
 ```python
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.feature_selection import f_classif
 
-model = DecisionTreeClassifier(random_state=42)
-model.fit(X, y)
-
-importance = model.feature_importances_
-print(importance)
+scores, p_values = f_classif(X, y)
 ```
 
-### 4. Recursive Feature Elimination (RFE)
-Recursively removes less important features until the desired number remains.
+#### 5. Mutual Information
+Measures linear and non-linear dependency.
+
+```python
+from sklearn.feature_selection import mutual_info_classif
+
+mi_scores = mutual_info_classif(X, y)
+```
+
+---
+
+### Wrapper Methods
+
+#### 6. Recursive Feature Elimination (RFE)
 
 ```python
 from sklearn.feature_selection import RFE
@@ -86,19 +97,147 @@ from sklearn.linear_model import LogisticRegression
 model = LogisticRegression(max_iter=1000)
 rfe = RFE(model, n_features_to_select=5)
 
-X_rfe = rfe.fit_transform(X, y)
+X_selected = rfe.fit_transform(X, y)
 ```
 
-### 5. Slope Method (m-Slope)
-Calculates the slope between a feature and target to measure linear influence.
+#### 7. RFECV
+
+```python
+from sklearn.feature_selection import RFECV
+from sklearn.linear_model import LogisticRegression
+
+rfecv = RFECV(
+    estimator=LogisticRegression(max_iter=1000),
+    cv=5
+)
+
+X_selected = rfecv.fit_transform(X, y)
+```
+
+#### 8. Forward Feature Selection
+
+```python
+from sklearn.feature_selection import SequentialFeatureSelector
+from sklearn.linear_model import LogisticRegression
+
+sfs = SequentialFeatureSelector(
+    LogisticRegression(max_iter=1000),
+    direction='forward'
+)
+
+X_selected = sfs.fit_transform(X, y)
+```
+
+#### 9. Backward Feature Elimination
+
+```python
+from sklearn.feature_selection import SequentialFeatureSelector
+from sklearn.linear_model import LogisticRegression
+
+sfs = SequentialFeatureSelector(
+    LogisticRegression(max_iter=1000),
+    direction='backward'
+)
+
+X_selected = sfs.fit_transform(X, y)
+```
+
+---
+
+### Embedded Methods
+
+#### 10. Decision Tree Feature Importance
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+
+model = DecisionTreeClassifier()
+model.fit(X, y)
+
+print(model.feature_importances_)
+```
+
+#### 11. Random Forest Feature Importance
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier()
+model.fit(X, y)
+
+print(model.feature_importances_)
+```
+
+#### 12. XGBoost Feature Importance
+
+```python
+from xgboost import XGBClassifier
+
+model = XGBClassifier()
+model.fit(X, y)
+
+print(model.feature_importances_)
+```
+
+---
+
+### Explainability Methods
+
+#### 13. Permutation Importance
+
+```python
+from sklearn.inspection import permutation_importance
+
+result = permutation_importance(
+    model,
+    X_test,
+    y_test
+)
+
+print(result.importances_mean)
+```
+
+#### 14. SHAP
+
+```python
+import shap
+
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X)
+
+shap.summary_plot(shap_values, X)
+```
+
+---
+
+### Statistical Method (Optional)
+
+#### 15. Slope Method (m)
+
+Measures the rate of change between a feature and the target variable.
 
 ```python
 from scipy.stats import linregress
 
-slope, intercept, r_value, p_value, std_err = linregress(X['feature'], y)
+slope, intercept, r_value, p_value, std_err = linregress(
+    X['feature'],
+    y
+)
 
 print("Slope:", slope)
 ```
+
+---
+
+## 📋 Feature Selection Categories
+
+| Category | Techniques |
+|-----------|-----------|
+| Filter Methods | Variance Threshold, Chi-Square (Chi²), Correlation Analysis, ANOVA F-Test, Mutual Information |
+| Wrapper Methods | RFE, RFECV, Forward Feature Selection, Backward Feature Elimination |
+| Embedded Methods | Decision Tree Importance, Random Forest Importance, XGBoost Importance |
+| Explainability Methods | Permutation Importance, SHAP |
+| Statistical Methods | Slope Method (m), Linear Trend Analysis |
 
 ---
 
@@ -106,15 +245,12 @@ print("Slope:", slope)
 
 1. Load Dataset
 2. Data Cleaning & Preprocessing
-3. Apply Feature Selection Methods:
-   - Chi-Square Test
-   - Correlation Analysis
-   - Decision Tree Importance
-   - Recursive Feature Elimination (RFE)
-   - Slope Method
-4. Compare Selected Features
-5. Visualize Results
-6. Choose Best Features for Model Training
+3. Feature Encoding and Scaling
+4. Apply Feature Selection Techniques
+5. Compare Selected Features
+6. Visualize Feature Importance
+7. Train Machine Learning Models
+8. Evaluate Model Performance
 
 ---
 
@@ -125,6 +261,8 @@ print("Slope:", slope)
 - Matplotlib
 - Seaborn
 - Scikit-learn
+- XGBoost
+- SHAP
 - SciPy
 
 ---
@@ -134,14 +272,15 @@ print("Slope:", slope)
 - Reduces Overfitting
 - Improves Model Accuracy
 - Faster Training
-- Better Interpretability
+- Reduces Computational Cost
 - Removes Redundant Features
+- Enhances Interpretability
 
 ---
 
 ## 🚀 Conclusion
 
-Different feature selection techniques may select different features because each method evaluates feature importance differently. Comparing multiple approaches helps identify the most influential features and build more efficient machine learning models.
+Feature selection is a critical preprocessing step in Machine Learning. Different techniques evaluate feature importance from different perspectives, including statistical relationships, model performance, embedded importance scores, and explainability methods. Combining multiple approaches often results in better feature selection and more robust machine learning models.
 
 ---
 
