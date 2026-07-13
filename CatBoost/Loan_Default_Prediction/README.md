@@ -6,7 +6,17 @@ This project aims to predict whether a borrower is likely to default on a loan u
 
 The project follows a complete Machine Learning workflow, including data preprocessing, exploratory data analysis, model training, hyperparameter tuning, threshold optimization, model evaluation, and explainability using SHAP.
 
----
+
+## Dataset
+
+The dataset used in this project is publicly available on Kaggle.
+
+**Dataset:** [Loan Default Prediction Dataset](https://www.kaggle.com/datasets/nikhil1e9/loan-default)
+
+### Download
+
+Download the dataset directly from the Kaggle link above and place the `Loan_default.csv` file in the project directory before running the notebook. The dataset contains **255,347 records** and **18 features**, including demographic, financial, employment, and loan-related attributes used to predict loan default.
+
 
 ## Problem Statement
 
